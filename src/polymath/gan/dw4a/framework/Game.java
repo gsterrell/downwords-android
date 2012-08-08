@@ -1,5 +1,6 @@
 package polymath.gan.dw4a.framework;
 
+
 public interface Game {
 	
 	public Input getInput();

@@ -1,9 +1,8 @@
 package polymath.gan.dw4a;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.Random;
 
-public class Letter {
+ class Letter {
 	public static final int A = 0; 
 	public static final int B = 1; 
 	public static final int C = 2; 
@@ -29,25 +28,23 @@ public class Letter {
 	public static final int W = 22;
 	public static final int X = 23;
 	public static final int Y = 24;
-	public static final int Z = 25;
-	public int x;
-	public int y;
-	public int whichLetter;
+	public static final int Z = 25; 
+	static final Random rand = new Random();
+	public float x, y;
+	float dirY;
+	public static int whichLetter;
 
 	
-	public Letter(int x, int y, int whichLetter) {
-		this.x = x;
-		this.y = y;
-		this.whichLetter = whichLetter;	
+	public Letter() {
+		x = rand.nextFloat() * 320;
+		y = 500;
+		dirY = -50;
+		whichLetter = rand.nextInt(26);
 	}
 	
-	
-	public void advance() {
-		y += 1;
+	public void update(float deltaTime) {
+		y = y + dirY * deltaTime;
+		
 	}
 	
-	public int getY() {
-		return y;
-	}
-
 }

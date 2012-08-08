@@ -1,245 +1,187 @@
 package polymath.gan.dw4a;
 
-import java.util.List;
-import java.util.Random;
-
-import android.graphics.Color;
-import android.view.MotionEvent;
+import javax.microedition.khronos.opengles.GL10;
 
 import polymath.gan.dw4a.framework.Game;
-import polymath.gan.dw4a.framework.Graphics;
-import polymath.gan.dw4a.framework.Input.TouchEvent;
-import polymath.gan.dw4a.framework.Pixmap;
 import polymath.gan.dw4a.framework.Screen;
+import polymath.gan.dw4a.framework.gl.FPSCounter;
+import polymath.gan.dw4a.framework.gl.Texture;
+import polymath.gan.dw4a.framework.gl.Vertices;
+import polymath.gan.dw4a.framework.impl.GLGame;
+import polymath.gan.dw4a.framework.impl.GLGraphics;
+import java.util.List;
+import java.util.ArrayList;
 
-public class GameScreen extends Screen {
-	enum GameState {
-		Ready,
-		Running,
-		Paused,
-		GameOver
-	}
-	
-	GameState state = GameState.Ready;
-	World world;
-	int oldScore = 0;
-	String score = "0";
-	Random rand = new Random();
-	
-	
-	
-	public GameScreen(Game game) {
-		super(game);
-		world = new World();
-	}
+public class GameScreen extends GLGame {
 	
 	@Override
-	public void update(float deltaTime) {
-		List<TouchEvent> touchEvents = game.getInput().getTouchEvents();
-		game.getInput().getKeyEvents();
-		
-		if(state == GameState.Ready)
-			updateReady(touchEvents);
-		if(state == GameState.Running)
-			updateRunning(touchEvents, deltaTime);
-		if(state == GameState.Paused)
-			updatePaused(touchEvents);
-		if(state == GameState.GameOver)
-			updateGameOver(touchEvents);
+	public Screen getStartScreen() {
+		return new LetterScreen(this);
 	}
+	 
+	class LetterScreen extends Screen {
+		static final int NUM_Letters = 10;
+		GLGraphics glGraphics;
+		Texture LetterTexture;
+		Vertices LetterModel;
+		Letter[] letters;
+		FPSCounter fpsCounter;
+		Letter letter;
 	
-	private void updateReady(List<TouchEvent> touchEvents) {
-		if(touchEvents.size() > 0)
-			state = GameState.Running;
-	}
-	
-	private void updateRunning(List<TouchEvent> touchEvents, float deltaTime) {
-		int len = touchEvents.size();
-		for(int i = 0; i < len; i++){
-		TouchEvent event = touchEvents.get(i);
-			if(event.type == TouchEvent.TOUCH_DOWN) {
-				if(event.x >= world.letter.x && event.y >= world.letter.y ) {
-					if(event.x <= world.letter.x + 40 && event.y <= world.letter.y + 60){
-					world.letter.advance();
-					}	
-				}
-			}
-		}
 		
-		world.update(deltaTime);
-		if(world.gameOver) {
-			if(Settings.soundEnabled)
-				Assets.dropsound.play(1);
-			state = GameState.GameOver;
-		}
-		if(oldScore != world.score) {
-			oldScore = world.score;
-			score = "" + oldScore;
-			if(Settings.soundEnabled)
-				Assets.dropsound.play(1);
-		}
-	}
-	
-	private void updatePaused(List<TouchEvent> touchEvents) {
-			int len = touchEvents.size();
-			for(int i = 0; i < len; i++) {
-				TouchEvent event = touchEvents.get(i);
-				//if(event.type == TouchEvent)
-			}
-	}
-	
-	private void updateGameOver(List<TouchEvent> touchEvents) {
-			int len = touchEvents.size();
-			for(int i = 0; i < len; i++) {
-				TouchEvent event = touchEvents.get(i);
-				//if(event.type == TouchEvent)
-			}
-	}
-	
-	@Override
-	public void present(float deltaTime) { 
-		
-		Graphics g = game.getGraphics();
-		
-		g.drawPixmap(Assets.background1, 0, 0);
-		
-		drawWorld(world);
-		if(state == GameState.Ready)
-			drawReadyUI();
-		if(state == GameState.Running)
-			drawRunningUI();
-		if(state == GameState.Paused)
-			drawPausedUI();
-		if(state == GameState.GameOver)
-			drawGameOverUI();
-		
-		drawText(g, score, g.getWidth() / 2 - score.length()*20 / 2, 
-				g.getHeight() - 42);
-	}
-	
-	private void drawWorld(World world) {
-		Graphics g = game.getGraphics();
-		Letter letter = world.letter;
-		
-		Pixmap letterPixmap = null;
-		if(letter.whichLetter == Letter.A)
-			letterPixmap = Assets.level1A;
-		if(letter.whichLetter == Letter.B)
-			letterPixmap = Assets.level1B;
-		if(letter.whichLetter == Letter.C)
-			letterPixmap = Assets.level1C;
-		if(letter.whichLetter == Letter.D)
-			letterPixmap = Assets.level1D;
-		if(letter.whichLetter == Letter.E)
-			letterPixmap = Assets.level1E;
-		if(letter.whichLetter == Letter.F)
-			letterPixmap = Assets.level1F;
-		if(letter.whichLetter == Letter.G)
-			letterPixmap = Assets.level1G;
-		if(letter.whichLetter == Letter.H)
-			letterPixmap = Assets.level1I;
-		if(letter.whichLetter == Letter.I)
-			letterPixmap = Assets.level1I;
-		if(letter.whichLetter == Letter.J)
-			letterPixmap = Assets.level1J;
-		if(letter.whichLetter == Letter.K)
-			letterPixmap = Assets.level1K;
-		if(letter.whichLetter == Letter.L)
-			letterPixmap = Assets.level1O;
-		if(letter.whichLetter == Letter.M)
-			letterPixmap = Assets.level1M;
-		if(letter.whichLetter == Letter.N)
-			letterPixmap = Assets.level1N;
-		if(letter.whichLetter == Letter.O)
-			letterPixmap = Assets.level1O;
-		if(letter.whichLetter == Letter.P)
-			letterPixmap = Assets.level1P;
-		if(letter.whichLetter == Letter.Q)
-			letterPixmap = Assets.level1Q;
-		if(letter.whichLetter == Letter.R)
-			letterPixmap = Assets.level1R;
-		if(letter.whichLetter == Letter.S)
-			letterPixmap = Assets.level1S;
-		if(letter.whichLetter == Letter.T)
-			letterPixmap = Assets.level1T;
-		if(letter.whichLetter == Letter.U)
-			letterPixmap = Assets.level1U;
-		if(letter.whichLetter == Letter.V)
-			letterPixmap = Assets.level1V;
-		if(letter.whichLetter == Letter.W)
-			letterPixmap = Assets.level1W;
-		if(letter.whichLetter == Letter.X)
-			letterPixmap = Assets.level1X;
-		if(letter.whichLetter == Letter.Y)
-			letterPixmap = Assets.level1Y;
-		if(letter.whichLetter == Letter.Z)
-			letterPixmap = Assets.level1Z;
+		public LetterScreen(Game game) {
+			super(game);
+			glGraphics = ((GLGame)game).getGLGraphics();
+			
+			letters = new Letter[10];
+			for (int i = 0; i < 10; i++) {
+				letters[i] =  new Letter();
 				
-		int x = letter.x * 32;
-		int y = letter.y * 32;
-		g.drawPixmap(letterPixmap, x, y);
-	}
-		
-	private void drawReadyUI() {
-		Graphics g = game.getGraphics();
-		g.drawLine(0, 416, 480, 416, Color.rgb(rand.nextInt(9), rand.nextInt(9), rand.nextInt(9)));
-	}
-	
-	private void drawRunningUI() {
-		Graphics g = game.getGraphics();
-		g.drawLine(0, 416, 480, 416, Color.rgb(rand.nextInt(9), rand.nextInt(9), rand.nextInt(9)));
-	}
-	
-	private void drawPausedUI() {
-		Graphics g = game.getGraphics();
-		g.drawLine(0, 416, 480, 416, Color.rgb(rand.nextInt(9), rand.nextInt(9), rand.nextInt(9)));
-	}
-	
-	private void drawGameOverUI() {
-		Graphics g = game.getGraphics();
-		g.drawLine(0, 416, 480, 416, Color.rgb(rand.nextInt(9), rand.nextInt(9), rand.nextInt(9)));
-	}
-	
-	private void drawText(Graphics g, String line, int x, int y){
-		int len = line.length();
-		for(int i = 0; i < len; i++) {
-			char character = line.charAt(i);
+			}
+						
+			switch (Letter.whichLetter) {
+			case Letter.A:
+				LetterTexture = new Texture((GLGame)game, "level1/A.png");
+				break;
+			case Letter.B:
+				LetterTexture = new Texture((GLGame)game, "level1/B.png");
+				break;
+			case Letter.C:
+				LetterTexture = new Texture((GLGame)game, "level1/C.png");
+				break;
+			case Letter.D:
+				LetterTexture = new Texture((GLGame)game, "level1/D.png");
+				break;
+			case Letter.E:
+				LetterTexture = new Texture((GLGame)game, "level1/E.png");
+				break;
+			case Letter.F:
+				LetterTexture = new Texture((GLGame)game, "level1/F.png");
+				break;
+			case Letter.G:
+				LetterTexture = new Texture((GLGame)game, "level1/G.png");
+				break;
+			case Letter.H:
+				LetterTexture = new Texture((GLGame)game, "level1/H.png");
+				break;
+			case Letter.I:
+				LetterTexture = new Texture((GLGame)game, "level1/I.png");
+				break;
+			case Letter.J:
+				LetterTexture = new Texture((GLGame)game, "level1/J.png");
+				break;
+			case Letter.K:
+				LetterTexture = new Texture((GLGame)game, "level1/K.png");
+				break;
+			case Letter.L:
+				LetterTexture = new Texture((GLGame)game, "level1/L.png");
+				break;
+			case Letter.M:
+				LetterTexture = new Texture((GLGame)game, "level1/M.png");
+				break;
+			case Letter.N:
+				LetterTexture = new Texture((GLGame)game, "level1/N.png");
+				break;
+			case Letter.O:
+				LetterTexture = new Texture((GLGame)game, "level1/O.png");
+				break;
+			case Letter.P:
+				LetterTexture = new Texture((GLGame)game, "level1/P.png");
+				break;
+			case Letter.Q:
+				LetterTexture = new Texture((GLGame)game, "level1/Q.png");
+				break;
+			case Letter.R:
+				LetterTexture = new Texture((GLGame)game, "level1/R.png");
+				break;
+			case Letter.S:
+				LetterTexture = new Texture((GLGame)game, "level1/S.png");
+				break;
+			case Letter.T:
+				LetterTexture = new Texture((GLGame)game, "level1/T.png");
+				break;
+			case Letter.U:
+				LetterTexture = new Texture((GLGame)game, "level1/U.png");
+				break;
+			case Letter.V:
+				LetterTexture = new Texture((GLGame)game, "level1/V.png");
+				break;
+			case Letter.W:
+				LetterTexture = new Texture((GLGame)game, "level1/W.png");
+				break;
+			case Letter.X:
+				LetterTexture = new Texture((GLGame)game, "level1/X.png");
+				break;
+			case Letter.Y:
+				LetterTexture = new Texture((GLGame)game, "level1/Y.png");
+				break;
+				default:
+				LetterTexture = new Texture((GLGame)game, "level1/Z.png");
+			} 
 			
-			if(character == ' ') {
-				x += 20;
-				continue;
+			
+			LetterModel = new Vertices(glGraphics, 4, 12, false, true);
+			LetterModel.setVertices(new float[] { -16, -16, 0, 1,
+												   16, -16, 1, 1,
+												   16,  16, 1, 0,
+												  -16,  16, 0, 0, }, 0, 16);
+			LetterModel.setIndices(new short[] {0, 1, 2, 2, 3, 0}, 0, 6);
+			
+			fpsCounter = new FPSCounter();
+
+		}
+
+		@Override
+		public void update(float deltaTime) {
+			game.getInput().getTouchEvents();
+			game.getInput().getKeyEvents();
+			
+			for(int i = 0; i < NUM_Letters; i++) {
+				letters[i].update(deltaTime);
 			}
 			
-			int srcX = 0;
-			int srcWidth = 0;
-			if(character == '.') {
-				srcX = 200;
-				srcWidth = 10;
-			} else {
-				srcX = (character - '0') * 20;
-				srcWidth = 20;
+		}
+
+		@Override
+		public void present(float deltaTime) {
+			GL10 gl = glGraphics.getGL();
+			gl.glClearColor(1,1,1,1);
+			gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+			gl.glMatrixMode(GL10.GL_PROJECTION);
+			gl.glLoadIdentity();
+			gl.glOrthof(0, 320, 0, 480, 1, -1);
+			
+			gl.glEnable(GL10.GL_TEXTURE_2D);
+			LetterTexture.bind();
+			
+			gl.glMatrixMode(GL10.GL_MODELVIEW);
+			for(int i = 0; i < NUM_Letters; i++) {
+				gl.glLoadIdentity();
+				gl.glTranslatef(letters[i].x,letters[i].y, 0);
+				gl.glRotatef(0, 0, 0, 1);
+				gl.glScalef(2, 2, 0);
+				LetterModel.draw(GL10.GL_TRIANGLES, 0, 6);
 			}
 			
-			g.drawPixmap(Assets.numbers, x, y, srcX, 0, srcWidth, 32);
-			x += srcWidth;
+			fpsCounter.logFrame();
+		}
+
+		@Override
+		public void pause() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void resume() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void dispose() {
+			// TODO Auto-generated method stub
+			
 		}
 	}
-	
-	@Override
-	public void pause() {
-		if(state == GameState.Running)
-			state = GameState.Paused;
-		
-		if(world.gameOver) {
-			Settings.addScore(world.score);
-			Settings.save(game.getFileIO());
-		}
-	}
-	
-	@Override
-	public void resume() {}
-	
-	@Override
-	public void dispose() {}
-	
 }
