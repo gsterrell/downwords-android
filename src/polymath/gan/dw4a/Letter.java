@@ -1,5 +1,6 @@
 package polymath.gan.dw4a;
 
+import java.io.IOException;
 import java.util.Random;
 
  class Letter {
@@ -31,8 +32,9 @@ import java.util.Random;
 	public static final int Z = 25; 
 	static final Random rand = new Random();
 	public float x, y;
+	//public int v;
 	float dirY;
-	public static int whichLetter;
+	public  int whichLetter;
 
 	
 	public Letter() {
@@ -46,5 +48,7 @@ import java.util.Random;
 		y = y + dirY * deltaTime;
 		
 	}
+	
+	
 	
 }
